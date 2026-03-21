@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <section class="page-header">
+        <h2>Your Applications</h2>
+        <p>Track your placement and internship applications in one place.</p>
+    </section>
+
+    {% if applications %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Deadline</th>
+                        <th>Link</th>
+                        <th>Notes</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for application in applications %}
+                        <tr>
+                            <td>{{ application["company"] }}</td>
+                            <td>{{ application["role"] }}</td>
+                            <td>{{ application["status"] }}</td>
+                            <td>{{ application["deadline"] }}</td>
+                            <td>
+                                {% if application["application_link"] %}
+                                    <a href="{{ application['application_link'] }}" target="_blank">View</a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ application["notes"] if application["notes"] else "-" }}</td>
+                            <td>{{ application["created_at"] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>No applications added yet.</p>
+            <a class="button" href="{{ url_for('add_application') }}">Add Your First Application</a>
+        </div>
+    {% endif %}
+{% endblock %}
