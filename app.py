@@ -102,6 +102,77 @@ def add_application():
     return render_template("add.html")
 
 
+
+
+
+def get_application_by_id(application_id):
+    # Get one application using its id
+    connection = get_db_connection()
+
+    application = connection.execute(
+        """
+        SELECT * FROM applications
+        WHERE id = ?
+        """,
+        (application_id,),
+    ).fetchone()
+
+    connection.close()
+    return application
+
+
+@app.route("/edit/<int:application_id>", methods=["GET", "POST"])
+def edit_application(application_id):
+    # Get the selected application
+    application = get_application_by_id(application_id)
+
+    if application is None:
+        flash("Application not found.")
+        return redirect(url_for("index"))
+
+    if request.method == "POST":
+        company = request.form["company"].strip()
+        role = request.form["role"].strip()
+        status = request.form["status"].strip()
+        deadline = request.form["deadline"].strip()
+        application_link = request.form["application_link"].strip()
+        notes = request.form["notes"].strip()
+
+        if not company or not role or not status or not deadline:
+            flash("Please fill in all required fields.")
+
+            updated_application = {
+                "id": application_id,
+                "company": company,
+                "role": role,
+                "status": status,
+                "deadline": deadline,
+                "application_link": application_link,
+                "notes": notes,
+                "created_at": application["created_at"]
+            }
+
+            return render_template("edit.html", application=updated_application)
+
+        connection = get_db_connection()
+
+        # Update the row in the database
+        connection.execute(
+            """
+            UPDATE applications
+            SET company = ?, role = ?, status = ?, deadline = ?, application_link = ?, notes = ?
+            WHERE id = ?
+            """,
+            (company, role, status, deadline, application_link, notes, application_id),
+        )
+
+        connection.commit()
+        connection.close()
+
+        flash("Application updated successfully.")
+        return redirect(url_for("index"))
+
+    return render_template("edit.html", application=application)
 if __name__ == "__main__":
     # Create the table before starting the app
     init_db()

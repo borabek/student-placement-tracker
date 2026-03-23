@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <section class="page-header">
+        <h2>Edit Application</h2>
+        <p>Update the details of an existing placement or internship application.</p>
+    </section>
+
+    <form class="form-card" method="POST">
+        {% include "_form.html" %}
+
+        <div class="form-actions">
+            <button type="submit" class="button">Update Application</button>
+            <a class="button button-secondary" href="{{ url_for('index') }}">Cancel</a>
+        </div>
+    </form>
+{% endblock %}

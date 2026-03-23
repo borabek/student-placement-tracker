@@ -7,31 +7,12 @@
     </section>
 
     <form class="form-card" method="POST">
-        <label for="company">Company *</label>
-        <input type="text" id="company" name="company" placeholder="e.g. Google">
+        {% include "_form.html" %}
 
-        <label for="role">Role *</label>
-        <input type="text" id="role" name="role" placeholder="e.g. Software Engineering Intern">
-
-        <label for="status">Status *</label>
-        <select id="status" name="status">
-            <option value="">Select status</option>
-            <option value="Applied">Applied</option>
-            <option value="Interview">Interview</option>
-            <option value="Rejected">Rejected</option>
-            <option value="Offer">Offer</option>
-            <option value="Closed">Closed</option>
-        </select>
-
-        <label for="deadline">Deadline *</label>
-        <input type="date" id="deadline" name="deadline">
-
-        <label for="application_link">Application Link</label>
-        <input type="url" id="application_link" name="application_link" placeholder="https://...">
-
-        <label for="notes">Notes</label>
-        <textarea id="notes" name="notes" rows="5" placeholder="Add any useful notes here..."></textarea>
-
-        <button type="submit" class="button">Save Application</button>
+        <div class="form-actions">
+            <button type="submit" class="button">Save Application</button>
+            <a class="button button-secondary" href="{{ url_for('index') }}">Back</a>
+        </div>
     </form>
+       
 {% endblock %}
