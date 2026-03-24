@@ -2,7 +2,7 @@ from datetime import datetime
 
 
 def get_status_counts(applications):
-    # Store totals for the cards on the home page
+    # Store totals for the dashboard cards
     counts = {
         "total": len(applications),
         "Applied": 0,
@@ -22,7 +22,7 @@ def get_status_counts(applications):
 
 
 def get_deadline_state(deadline_text):
-    # Work out if the deadline has passed or is close
+    # Work out if a deadline has passed or is getting close
     try:
         deadline_date = datetime.strptime(deadline_text, "%Y-%m-%d").date()
     except ValueError:
@@ -41,11 +41,11 @@ def get_deadline_state(deadline_text):
 
 
 def validate_application_form(company, role, status, deadline, application_link):
-    # Check the main required fields
+    # Check the required fields first
     if not company or not role or not status or not deadline:
         return "Please fill in all required fields."
 
-    # Only check the link if the user typed one
+    # Check the link only if the user entered one
     if application_link and not (
         application_link.startswith("http://")
         or application_link.startswith("https://")

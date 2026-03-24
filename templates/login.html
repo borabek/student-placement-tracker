@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <section class="auth-card">
+        <h2>Login</h2>
+        <p>Sign in to manage your placement applications.</p>
+
+        <form method="POST">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username">
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password">
+
+            <div class="form-actions">
+                <button type="submit" class="button">Login</button>
+                <a class="button button-secondary" href="{{ url_for('register') }}">Create Account</a>
+            </div>
+        </form>
+    </section>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <section class="auth-card">
+        <h2>Create Account</h2>
+        <p>Register to save and manage your own applications.</p>
+
+        <form method="POST">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Choose a username">
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Choose a password">
+
+            <label for="confirm_password">Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="Type the password again">
+
+            <div class="form-actions">
+                <button type="submit" class="button">Register</button>
+                <a class="button button-secondary" href="{{ url_for('login') }}">Back to Login</a>
+            </div>
+        </form>
+    </section>
+{% endblock %}

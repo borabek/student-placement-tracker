@@ -1,9 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <section class="page-header">
-        <h2>Your Applications</h2>
-        <p>Track your placement and internship applications in one place.</p>
+    <section class="page-header page-header-flex">
+        <div>
+            <h2>Your Applications</h2>
+            <p>Track, filter and organise your placement applications.</p>
+        </div>
+
+        <div class="user-summary">
+            <span>Signed in as <strong>{{ session["username"] }}</strong></span>
+        </div>
     </section>
 
     <section class="dashboard-cards">
@@ -33,6 +39,58 @@
         </div>
     </section>
 
+    <form method="GET" class="filter-card">
+        <div class="filter-grid">
+            <div>
+                <label for="search">Search</label>
+                <input
+                    type="text"
+                    id="search"
+                    name="search"
+                    placeholder="Search company, role or notes"
+                    value="{{ search_text }}"
+                >
+            </div>
+
+            <div>
+                <label for="status">Filter by status</label>
+                <select id="status" name="status">
+                    <option value="">All statuses</option>
+                    <option value="Applied" {% if status_filter == "Applied" %}selected{% endif %}>Applied</option>
+                    <option value="Interview" {% if status_filter == "Interview" %}selected{% endif %}>Interview</option>
+                    <option value="Rejected" {% if status_filter == "Rejected" %}selected{% endif %}>Rejected</option>
+                    <option value="Offer" {% if status_filter == "Offer" %}selected{% endif %}>Offer</option>
+                    <option value="Closed" {% if status_filter == "Closed" %}selected{% endif %}>Closed</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="sort">Sort by</label>
+                <select id="sort" name="sort">
+                    <option value="deadline_asc" {% if sort_by == "deadline_asc" %}selected{% endif %}>Deadline (Earliest)</option>
+                    <option value="deadline_desc" {% if sort_by == "deadline_desc" %}selected{% endif %}>Deadline (Latest)</option>
+                    <option value="company_asc" {% if sort_by == "company_asc" %}selected{% endif %}>Company (A-Z)</option>
+                    <option value="company_desc" {% if sort_by == "company_desc" %}selected{% endif %}>Company (Z-A)</option>
+                    <option value="status_asc" {% if sort_by == "status_asc" %}selected{% endif %}>Status (A-Z)</option>
+                    <option value="status_desc" {% if sort_by == "status_desc" %}selected{% endif %}>Status (Z-A)</option>
+                    <option value="created_desc" {% if sort_by == "created_desc" %}selected{% endif %}>Newest Added</option>
+                    <option value="created_asc" {% if sort_by == "created_asc" %}selected{% endif %}>Oldest Added</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="button">Apply</button>
+            <a class="button button-secondary" href="{{ url_for('index') }}">Reset</a>
+            <a
+                class="button button-secondary"
+                href="{{ url_for('export_csv', search=search_text, status=status_filter, sort=sort_by) }}"
+            >
+                Export CSV
+            </a>
+        </div>
+    </form>
+
     {% if applications %}
         <div class="table-wrapper">
             <table>
@@ -60,7 +118,6 @@
                             </td>
                             <td>
                                 <div>{{ application["deadline"] }}</div>
-
                                 {% if application["deadline_state"] == "overdue" %}
                                     <small class="deadline-label overdue-text">Overdue</small>
                                 {% elif application["deadline_state"] == "due-soon" %}
@@ -100,9 +157,9 @@
         </div>
     {% else %}
         <div class="empty-state">
-            <h3>No applications added yet</h3>
-            <p>Start by saving your first placement or internship application.</p>
-            <a class="button" href="{{ url_for('add_application') }}">Add Your First Application</a>
+            <h3>No applications found</h3>
+            <p>Try changing the filters or add your first application.</p>
+            <a class="button" href="{{ url_for('add_application') }}">Add Application</a>
         </div>
     {% endif %}
 {% endblock %}

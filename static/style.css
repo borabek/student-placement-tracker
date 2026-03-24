@@ -7,7 +7,7 @@ body {
 
 .container {
     width: 90%;
-    max-width: 1000px;
+    max-width: 1100px;
     margin: 0 auto;
 }
 
@@ -18,18 +18,33 @@ body {
     margin-bottom: 30px;
 }
 
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
 .header h1 {
-    margin: 0 0 10px 0;
+    margin: 0 0 8px 0;
     font-size: 28px;
 }
 
-.header nav a {
-    color: white;
-    text-decoration: none;
-    margin-right: 15px;
+.header-subtitle {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 14px;
 }
 
-.header nav a:hover {
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    margin-right: 14px;
+    font-weight: bold;
+}
+
+.nav-links a:hover {
     text-decoration: underline;
 }
 
@@ -49,6 +64,13 @@ body {
     flex-wrap: wrap;
 }
 
+.user-summary {
+    background-color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+}
+
 .flash-message {
     background-color: #d1fae5;
     border: 1px solid #10b981;
@@ -60,11 +82,28 @@ body {
 
 .form-card,
 .table-wrapper,
-.empty-state {
+.empty-state,
+.filter-card,
+.auth-card {
     background-color: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+}
+
+.auth-card {
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.filter-card {
+    margin-bottom: 24px;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
 }
 
 label {

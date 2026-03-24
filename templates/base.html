@@ -8,11 +8,21 @@
 </head>
 <body>
     <header class="header">
-        <div class="container">
-            <h1>Student Placement Tracker</h1>
-            <nav>
-                <a href="{{ url_for('index') }}">Home</a>
-                <a href="{{ url_for('add_application') }}">Add Application</a>
+        <div class="container header-content">
+            <div>
+                <h1>Student Placement Tracker</h1>
+                <p class="header-subtitle">Keep your placement applications in one place</p>
+            </div>
+
+            <nav class="nav-links">
+                {% if session.get("user_id") %}
+                    <a href="{{ url_for('index') }}">Dashboard</a>
+                    <a href="{{ url_for('add_application') }}">Add Application</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Login</a>
+                    <a href="{{ url_for('register') }}">Register</a>
+                {% endif %}
             </nav>
         </div>
     </header>
