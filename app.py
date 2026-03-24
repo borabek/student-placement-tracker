@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import sqlite3
 from datetime import datetime
+from utils import get_status_counts, get_deadline_state, validate_application_form
 
 # Create the Flask app
 app = Flask(__name__)
@@ -23,6 +24,7 @@ def get_db_connection():
 def init_db():
     # Connect to the database
     connection = get_db_connection()
+
     # Create the applications table if it does not already exist
     connection.execute(
         """
@@ -38,71 +40,11 @@ def init_db():
         )
         """
     )
+
     # Save the table creation
     connection.commit()
     # Close the database connection
     connection.close()
-
-
-@app.route("/")
-def index():
-    # Connect to the database
-    connection = get_db_connection()
-    # Get all saved applications and sort them by deadline
-    applications = connection.execute(
-        """
-        SELECT * FROM applications
-        ORDER BY deadline ASC
-        """
-    ).fetchall()
-    # Close the database connection
-    connection.close()
-    # Show the home page with all applications
-    return render_template("index.html", applications=applications)
-
-
-@app.route("/add", methods=["GET", "POST"])
-def add_application():
-    # Check if the user submitted the form
-    if request.method == "POST":
-        # Get each value from the form and remove extra spaces
-        company = request.form["company"].strip()
-        role = request.form["role"].strip()
-        status = request.form["status"].strip()
-        deadline = request.form["deadline"].strip()
-        application_link = request.form["application_link"].strip()
-        notes = request.form["notes"].strip()
-        # Make sure the important fields are not empty
-        if not company or not role or not status or not deadline:
-            flash("Please fill in all required fields.")
-            return redirect(url_for("add_application"))
-        # Save the date and time when the application was added
-        created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        # Connect to the database
-        connection = get_db_connection()
-        # Insert the new application into the table
-        connection.execute(
-            """
-            INSERT INTO applications (
-                company, role, status, deadline, application_link, notes, created_at
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """,
-            (company, role, status, deadline, application_link, notes, created_at),
-        )
-        # Save the new row
-        connection.commit()
-        # Close the connection
-        connection.close()
-        # Show a success message
-        flash("Application added successfully.")
-        # Go back to the home page
-        return redirect(url_for("index"))
-    # If it is a normal GET request, just show the add page
-    return render_template("add.html")
-
-
-
 
 
 def get_application_by_id(application_id):
@@ -119,6 +61,101 @@ def get_application_by_id(application_id):
 
     connection.close()
     return application
+
+
+@app.route("/")
+def index():
+    # Connect to the database
+    connection = get_db_connection()
+
+    # Get all saved applications and sort them by deadline
+    applications = connection.execute(
+        """
+        SELECT * FROM applications
+        ORDER BY deadline ASC
+        """
+    ).fetchall()
+
+    connection.close()
+
+    # Convert rows to dictionaries so we can add extra values
+    application_list = [dict(row) for row in applications]
+
+    # Add deadline state for each application
+    for application in application_list:
+        application["deadline_state"] = get_deadline_state(application["deadline"])
+
+    # Get counts for dashboard cards
+    counts = get_status_counts(application_list)
+
+    # Show the home page
+    return render_template(
+        "index.html",
+        applications=application_list,
+        counts=counts,
+    )
+
+
+@app.route("/add", methods=["GET", "POST"])
+def add_application():
+    # Check if the user submitted the form
+    if request.method == "POST":
+        # Get each value from the form and remove extra spaces
+        company = request.form["company"].strip()
+        role = request.form["role"].strip()
+        status = request.form["status"].strip()
+        deadline = request.form["deadline"].strip()
+        application_link = request.form["application_link"].strip()
+        notes = request.form["notes"].strip()
+
+        # Validate the form
+        error_message = validate_application_form(
+            company, role, status, deadline, application_link
+        )
+
+        if error_message:
+            flash(error_message)
+
+            application_data = {
+                "company": company,
+                "role": role,
+                "status": status,
+                "deadline": deadline,
+                "application_link": application_link,
+                "notes": notes,
+            }
+
+            return render_template("add.html", application=application_data)
+
+        # Save the date and time when the application was added
+        created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Connect to the database
+        connection = get_db_connection()
+
+        # Insert the new application into the table
+        connection.execute(
+            """
+            INSERT INTO applications (
+                company, role, status, deadline, application_link, notes, created_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (company, role, status, deadline, application_link, notes, created_at),
+        )
+
+        # Save the new row
+        connection.commit()
+        # Close the connection
+        connection.close()
+
+        # Show a success message
+        flash("Application added successfully.")
+        # Go back to the home page
+        return redirect(url_for("index"))
+
+    # If it is a normal GET request, just show the add page
+    return render_template("add.html", application=None)
 
 
 @app.route("/edit/<int:application_id>", methods=["GET", "POST"])
@@ -138,8 +175,13 @@ def edit_application(application_id):
         application_link = request.form["application_link"].strip()
         notes = request.form["notes"].strip()
 
-        if not company or not role or not status or not deadline:
-            flash("Please fill in all required fields.")
+        # Validate the form
+        error_message = validate_application_form(
+            company, role, status, deadline, application_link
+        )
+
+        if error_message:
+            flash(error_message)
 
             updated_application = {
                 "id": application_id,
@@ -149,7 +191,7 @@ def edit_application(application_id):
                 "deadline": deadline,
                 "application_link": application_link,
                 "notes": notes,
-                "created_at": application["created_at"]
+                "created_at": application["created_at"],
             }
 
             return render_template("edit.html", application=updated_application)
@@ -173,6 +215,28 @@ def edit_application(application_id):
         return redirect(url_for("index"))
 
     return render_template("edit.html", application=application)
+
+
+@app.route("/delete/<int:application_id>", methods=["POST"])
+def delete_application(application_id):
+    # Delete one application by id
+    connection = get_db_connection()
+
+    connection.execute(
+        """
+        DELETE FROM applications
+        WHERE id = ?
+        """,
+        (application_id,),
+    )
+
+    connection.commit()
+    connection.close()
+
+    flash("Application deleted successfully.")
+    return redirect(url_for("index"))
+
+
 if __name__ == "__main__":
     # Create the table before starting the app
     init_db()

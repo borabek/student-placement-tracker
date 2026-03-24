@@ -41,6 +41,14 @@ body {
     margin-bottom: 8px;
 }
 
+.page-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
 .flash-message {
     background-color: #d1fae5;
     border: 1px solid #10b981;
@@ -92,6 +100,59 @@ textarea {
     background-color: #1d4ed8;
 }
 
+.button.button-secondary {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.button.button-secondary:hover {
+    background-color: #e5e7eb;
+}
+
+.button.button-danger {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.button.button-danger:hover {
+    background-color: #fecaca;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.dashboard-card {
+    background-color: white;
+    padding: 18px;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-card h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #475569;
+}
+
+.dashboard-card p {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+    color: #111827;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -107,6 +168,75 @@ table td {
 
 table th {
     background-color: #f9fafb;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.status-applied {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status-interview {
+    background-color: #ede9fe;
+    color: #6d28d9;
+}
+
+.status-rejected {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.status-offer {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.status-closed {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.deadline-label {
+    display: inline-block;
+    margin-top: 6px;
+    font-weight: bold;
+}
+
+.overdue-text {
+    color: #b91c1c;
+}
+
+.due-soon-text {
+    color: #b45309;
+}
+
+.overdue {
+    background-color: #fef2f2;
+}
+
+.due-soon {
+    background-color: #fffbeb;
+}
+
+.actions-cell {
+    min-width: 150px;
+}
+
+.inline-form {
+    display: inline-block;
+    margin-top: 8px;
+}
+
+.small-button {
+    padding: 8px 12px;
+    font-size: 13px;
 }
 
 .empty-state {
